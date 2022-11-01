@@ -1,0 +1,80 @@
+Final project
+
+deploy /home/devera/Devera/SCORES/irc3-token-uri/irc3-token/build/libs/irc3-token-0.9.0-optimized.jar --param _name=Tien --param _symbol=Tien
+
+CONTRACT_ADDR=cx0e508eda953744e616abf62f9816991176aa67aa
+echo $CONTRACT_ADDR
+call $CONTRACT_ADDR --method getOwner
+call $CONTRACT_ADDR --method getStartTime
+call $CONTRACT_ADDR --method getEndTime
+call $CONTRACT_ADDR --method getBalance
+call $CONTRACT_ADDR --method getDataAmount
+call $CONTRACT_ADDR --method total
+call $CONTRACT_ADDR --method getWhiteList
+call $CONTRACT_ADDR --method getData
+call $CONTRACT_ADDR --method getDataAtIndex --param _index=0
+call $CONTRACT_ADDR --method getGeneralData
+call $CONTRACT_ADDR --method getTemp2
+
+invoke $CONTRACT_ADDR --method setTemp2 --param data=Tien
+
+
+call $CONTRACT_ADDR --method getHoldingTokenLengthOfCaller --param address=hxb6b5791be0b5ef67063b3c10b840fb81514db2fd
+call $CONTRACT_ADDR --method getTokensOfCaller --param address=hxb6b5791be0b5ef67063b3c10b840fb81514db2fd
+
+call $CONTRACT_ADDR --method getHoldingTokenLengthOfCaller --param address=hxac480ac17421f8eb1889c0a64f45cd315d6d7237
+call $CONTRACT_ADDR --method getTokensOfCaller --param address=hxac480ac17421f8eb1889c0a64f45cd315d6d7237
+
+call $CONTRACT_ADDR --method contractOwnerGetData
+call $CONTRACT_ADDR --method getGeneralData
+
+
+call $CONTRACT_ADDR --method getData
+invoke $CONTRACT_ADDR --method addToken --param _dataURL="https://www.google.com" --param _price=100
+invoke $CONTRACT_ADDR --method addToken --param _dataURL="https://www.facebook.com" --param _price=200
+call $CONTRACT_ADDR --method getData
+
+
+
+call $CONTRACT_ADDR --method getWhiteList
+invoke $CONTRACT_ADDR --method registerWhiteUser
+
+
+call $CONTRACT_ADDR --method getStartTime
+call $CONTRACT_ADDR --method getEndTime
+invoke $CONTRACT_ADDR --method setPresaleTime --param _startTime=16687268915813 --param _endTime=16687268915814
+call $CONTRACT_ADDR --method getStartTime
+call $CONTRACT_ADDR --method getEndTime
+invoke $CONTRACT_ADDR --method setPresaleTime --param _startTime=1667231057244 --param _endTime=16687268915813
+1667231057244
+1667268315813
+
+call $CONTRACT_ADDR --method total
+invoke $CONTRACT_ADDR --method mintDataID --param _id=0 --value=150
+invoke $CONTRACT_ADDR --method mintDataID --param _id=1 --value=100
+invoke $CONTRACT_ADDR --method mintDataID --param _id=0 --value=100
+invoke $CONTRACT_ADDR --method mintDataID --param _id=1 --value=200
+call $CONTRACT_ADDR --method total
+
+
+
+call $CONTRACT_ADDR --method getWhiteList
+invokeDevera $CONTRACT_ADDR --method registerWhiteUser
+call $CONTRACT_ADDR --method total
+invokeDevera $CONTRACT_ADDR --method mintDataID --param _id=0 --value=150
+invokeDevera $CONTRACT_ADDR --method mintDataID --param _id=0 --value=100
+invokeDevera $CONTRACT_ADDR --method mintDataID --param _id=1 --value=100
+invokeDevera $CONTRACT_ADDR --method mintDataID --param _id=1 --value=200
+
+
+
+call $CONTRACT_ADDR --method ownerOf --param _tokenId=1
+call $CONTRACT_ADDR --method ownerOf --param _tokenId=2
+
+call $CONTRACT_ADDR --method getBalance
+
+call $CONTRACT_ADDR --method total
+
+
+
+

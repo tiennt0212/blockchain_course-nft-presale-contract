@@ -1,0 +1,236 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- ICON SDK -->
+    <div id="d-app"></div>
+
+    <h1>Create Wallet</h1>
+    <button onclick="createWallet()">Create</button>
+    <p>Your wallet is: <span id="wallet-addr"></span></p>
+    <script src="https://cdn.jsdelivr.net/npm/icon-sdk-js@latest/build/icon-sdk-js.web.min.js"></script>
+
+    <h1>Get balance</h1>
+    <button onclick="getBalance()">Get</button>
+    <p>Your balance is: <span id="wallet-balance"></span></p>
+
+    <h1>ICX Wallet</h1>
+    <div>
+      <span>Is ICONex has address?</span
+      ><button onclick="testHasAddress()">Has Address?</button>
+    </div>
+    <div>
+      <span>Is my Address connected to ICONex?</span
+      ><button onclick="testHasMyAddress(localStorage.getItem('address'))">
+        Has My Address?
+      </button>
+    </div>
+    <div>
+      <span>ADDRESS</span><button onclick="testADDRESS()">ADDRESS</button>
+    </div>
+    <div>
+      <span>Get Greeting Hello World</span
+      ><button onclick="getGreeting('getGreeting')">Greeting</button>
+    </div>
+    <div>
+      <span>Set Name in Hello World</span
+      ><button onclick="setName('setName', {name: 'Jump'})">Set Name</button>
+    </div>
+
+    <!-- <script src="index.js"></script> -->
+    <script>
+      const IconService = window["icon-sdk-js"].default;
+      const IconWallet = IconService.IconWallet;
+      // const iconService = window["icon-sdk-js"];
+      // const IconAmount = iconService.Amount;
+      // const IconConverter = iconService.Converter;
+      // const IconBuilder = iconService.Builder;
+
+      const provider = new IconService.HttpProvider(
+        "https://sejong.net.solidwallet.io/api/v3"
+      );
+      const iconService = new IconService(provider);
+
+      let block = 0;
+      async function getBlock() {
+        console.log("CALLED getBlock");
+        block = await iconService.getBlockByHeight(1000).execute();
+        document.getElementById(
+          "d-app"
+        ).innerHTML = `Block: ${block.blockHash}`;
+        console.log(block);
+      }
+
+      async function createWallet() {
+        console.log("CALLED createWallet");
+        const wallet = IconWallet.create();
+        console.log("CREATED a wallet:", wallet);
+        console.log("DATA private key is: ", wallet.privKey);
+        const keystore = wallet.store("tien");
+        console.log("DATA keystore is:", keystore);
+        localStorage.setItem("tien.json", JSON.stringify(keystore));
+        document.getElementById("wallet-addr").innerHTML = keystore.address;
+      }
+
+      async function getBalance() {
+        const balance = await iconService
+          .getBalance(localStorage.getItem("address"))
+          .execute();
+        document.getElementById("wallet-balance").innerHTML = balance;
+      }
+
+      function testHasAddress() {
+        const customEvent = new CustomEvent("ICONEX_RELAY_REQUEST", {
+          detail: {
+            type: "REQUEST_HAS_ACCOUNT",
+          },
+        });
+        window.dispatchEvent(customEvent);
+      }
+
+      const eventHandlerHasAddress = (event) => {
+        const { type, payload } = event.detail;
+        if (type === "RESPONSE_HAS_ACCOUNT") {
+          console.log("HAS ACCOUNT: ", payload);
+        }
+      };
+      window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandlerHasAddress);
+
+      function testHasMyAddress(address) {
+        console.log("Test address: ", address);
+        const customEvent = new CustomEvent("ICONEX_RELAY_REQUEST", {
+          detail: {
+            type: "REQUEST_HAS_ADDRESS",
+            payload: address,
+          },
+        });
+        window.dispatchEvent(customEvent);
+      }
+      const eventHandlerHasMyAddress = (event) => {
+        const { type, payload } = event.detail;
+        if (type === "RESPONSE_HAS_ADDRESS") {
+          console.log(
+            `HAS MY ADDRESS ${localStorage.getItem("address")}: `,
+            payload
+          );
+        }
+      };
+      window.addEventListener(
+        "ICONEX_RELAY_RESPONSE",
+        eventHandlerHasMyAddress
+      );
+
+      function testADDRESS() {
+        const customEvent = new CustomEvent("ICONEX_RELAY_REQUEST", {
+          detail: {
+            type: "REQUEST_ADDRESS",
+          },
+        });
+        window.dispatchEvent(customEvent);
+      }
+
+      const eventHandlerADDRESS = (event) => {
+        const { type, payload } = event.detail;
+        if (type === "RESPONSE_ADDRESS") {
+          console.log(payload); // e.g., hx19870922...
+        }
+      };
+      window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandlerADDRESS);
+
+      const getGreeting = (method, params) => {
+        const payload = {
+          jsonrpc: "2.0",
+          id: 100,
+          method: "icx_call",
+          params: {
+            to: localStorage.getItem("score-hello-world"),
+            // from: localStorage.getItem("address"),
+            dataType: "call",
+            data: {
+              method,
+            },
+          },
+        };
+        console.log(payload);
+        const customEvent = new CustomEvent("ICONEX_RELAY_REQUEST", {
+          detail: {
+            type: "REQUEST_JSON-RPC",
+            payload,
+          },
+        });
+        window.dispatchEvent(customEvent);
+      };
+
+      const setName = (method, params) => {
+        const payload = {
+          jsonrpc: "2.0",
+          id: 100,
+          method: "icx_sendTransaction",
+          params: {
+            nid: "0x53",
+            timestamp: `0x${(new Date().getTime() * 1000).toString(16)}`,
+            version: "0x3",
+            from: localStorage.getItem("address"),
+            to: localStorage.getItem("score-hello-world"),
+            // from: localStorage.getItem("address"),
+            dataType: "call",
+            data: {
+              method,
+              params,
+            },
+          },
+        };
+        console.log(payload);
+        const customEvent = new CustomEvent("ICONEX_RELAY_REQUEST", {
+          detail: {
+            type: "REQUEST_JSON-RPC",
+            payload,
+          },
+        });
+        window.dispatchEvent(customEvent);
+      };
+
+      const eventHandlerJSONRPC = (event) => {
+        const { type, payload } = event.detail;
+        if (type === "RESPONSE_JSON-RPC") {
+          console.log(payload); // e.g., {"jsonrpc": "2.0", "id": 6339, "result": { ... }}
+        } else if (type === "CANCEL_JSON-RPC") {
+          console.error("User cancelled JSON-RPC request");
+        }
+      };
+
+      window.addEventListener("ICONEX_RELAY_RESPONSE", eventHandlerJSONRPC);
+      async function callGreeting() {
+        const txObj = new CallTransactionBuilder()
+          .from(localStorage.getItem("addresss"))
+          .to(localStorage.getItem("score-hello-world"))
+          .stepLimit(IconConverter.toBigNumber("2000000"))
+          .nid(IconConverter.toBigNumber("3"))
+          .nonce(IconConverter.toBigNumber("1"))
+          .version(IconConverter.toBigNumber("3"))
+          .timestamp(new Date().getTime() * 1000)
+          .method("getGreeting")
+          .params({
+            _value: IconConverter.toHex(
+              IconAmount.of(1, IconAmount.Unit.ICX).toLoop()
+            ),
+          })
+          .build();
+      }
+
+      if (localStorage.getItem("tien.json")) {
+        const keystore = JSON.parse(localStorage.getItem("tien.json"));
+        document.getElementById("wallet-addr").innerHTML = keystore.address;
+        localStorage.setItem("address", keystore.address);
+        getBalance();
+      }
+      // getBlock();
+
+      // const wallet = iconService.IconWallet.create();
+    </script>
+  </body>
+</html>
